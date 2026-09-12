@@ -57,6 +57,16 @@
   .chk input{accent-color:var(--accent);margin-top:4px;flex:none}
 
   .chartbox{overflow-x:auto;margin:6px 0}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:12.5px;margin:14px 0 4px;
+    padding:10px 14px;border:1px solid var(--line);border-radius:9px;background:var(--bg)}
+  .legend span{display:flex;align-items:center;gap:7px}
+  .legend i.sw{width:22px;height:0;flex:none;border-top:2px solid transparent}
+  .legend i.sw.ucl{border-top-color:var(--danger)}
+  .legend i.sw.cl{border-top:2px dashed var(--accent)}
+  .legend i.sw.zone{height:11px;border:0;background:linear-gradient(var(--zoneA),var(--zoneB),var(--zoneC));border-radius:2px}
+  .legend i.sw.dot{width:9px;height:9px;border:0;border-radius:50%;background:var(--trace)}
+  .legend i.sw.baddot{width:11px;height:11px;border:0;border-radius:50%;background:var(--danger)}
+  .legend i.sw.bell{height:11px;border:0;border-left:2px solid var(--accent);border-radius:0 0 0 9px;border-bottom:2px solid var(--accent)}
   svg.cc{width:100%;height:auto;min-width:640px;display:block}
   .zoneA{fill:var(--zoneA)} .zoneB{fill:var(--zoneB)} .zoneC{fill:var(--zoneC)}
   .zoneLetter{fill:var(--muted);font-size:10px;opacity:.7}
@@ -171,8 +181,23 @@
       <span style="color:var(--muted);font-size:12px">真實工廠的做法：Phase I 先建界限，Phase II 拿它監控後續生產</span></span></label>
   </div>
 
+  <div class="legend">
+    <span><i class="sw ucl"></i>紅實線 = UCL / LCL（μ ± 3σ）</span>
+    <span><i class="sw cl"></i>綠虛線 = CL 中心線（平均值）</span>
+    <span><i class="sw zone"></i>灰色橫帶 = A/B/C 區，每帶 1σ 寬</span>
+    <span><i class="sw dot"></i>黑點 = 正常</span>
+    <span><i class="sw baddot"></i>紅點 = 被判異，上方數字是違反的規則編號</span>
+    <span><i class="sw bell"></i>左側曲線 = 同一份資料的常態分佈</span>
+    <span style="color:var(--muted)">滑鼠停在點上可看該點的數值與 z 值</span>
+  </div>
+
   <div class="chartbox"><div id="chart1"></div></div>
   <div class="chartbox"><div id="chart2"></div></div>
+
+  <p class="sub" style="margin:2px 0 0">
+    <b>上圖 X̄</b>＝每組的平均值，看「製程中心有沒有跑掉」。
+    <b>下圖 R</b>＝每組的最大值減最小值，看「同一組內的變異有沒有變大」。
+    兩張圖看的是不同的事，缺一不可。</p>
 
   <details open>
     <summary>管制界限是怎麼算出來的？（點開看實際數字）</summary>
