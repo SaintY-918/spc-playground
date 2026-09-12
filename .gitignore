@@ -1,3 +1,6 @@
 node_modules/
 dist/
 .DS_Store
+
+# 本機開發用的編輯器／工具設定
+.claude/
