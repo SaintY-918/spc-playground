@@ -110,6 +110,8 @@
   .gal svg.mini{width:100%;height:96px;display:block}
   .gal .d{font-size:12.5px;color:var(--muted)}
   .gal .d b{color:var(--ink)}
+  .card h3.sh{font-size:14px;margin:20px 0 6px;padding-top:16px;border-top:1px solid var(--line)}
+  .card h3.sh:first-of-type{border-top:0;padding-top:0}
   .story{border:1px dashed var(--line);border-radius:9px;padding:14px 16px;margin-top:14px;font-size:14px}
   .story .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
   .story p{margin:4px 0 12px}
@@ -143,22 +145,39 @@
      所有圖都是即時算的：拉滑桿改變製程，管制圖就跟著動。以蝕刻製程為例。</p>
 </header>
 
-<!-- ============ 1. 觀念橋接 ============ -->
+<!-- ============ 1. 目的與觀念橋接 ============ -->
 <section class="card">
-  <h2><span class="num">1</span>先把已知的接上未知的</h2>
-  <p class="sub">你已經懂常態分佈跟 3 個標準差。管制圖其實就是把那張鐘形圖轉 90 度，然後在時間軸上一直畫點。</p>
+  <h2><span class="num">1</span>SPC 在解決什麼問題</h2>
+  <p class="sub">在講任何公式之前先講目的。整個 SPC 只為了回答一個問題：<b>這次的波動，到底該不該動手？</b></p>
+
+  <div class="lead">
+    <p style="margin:0 0 10px"><b>把「共同原因」和「特殊原因」分開。</b>
+      共同原因是製程本來就存在的隨機雜訊；特殊原因是有具體來源的異常。
+      分不清楚會犯兩種錯，而且<b>兩種都會讓製程變差</b>：</p>
+    <p style="margin:0 0 10px">
+      把雜訊當異常 → 去調機 → 這叫<b>過度調整 (over-adjustment)</b>，變異反而被放大。<br>
+      把異常當雜訊 → 放著不管 → 不良品流出去。</p>
+    <p style="margin:0">所以最重要的一句是：<b>管制圖抓的是「變化」，不是「超標」。</b>
+      全部落在規格內、卻連續 20 點都在中心線上方 —— 那是失控。
+      全部落在管制界限內、但客戶規格很緊 —— 那是能力不足。兩件事要分開看。</p>
+  </div>
+
+  <h3 class="sh">管制圖就是轉了 90 度的常態分佈</h3>
+  <p style="margin:0 0 6px">常態分佈與 3 個標準差是 SPC 唯一用到的統計前提。
+     把鐘形曲線轉 90 度貼在時間軸左邊，再依時間順序一點一點畫上去，就是管制圖。</p>
   <div class="lead">
     <p style="margin:0 0 8px"><b>UCL / LCL 就是 μ ± 3σ。</b>沒別的了。
       Upper / Lower Control Limit ＝ 上／下管制界限。點落在裡面 = 只有隨機波動；
-      點落在外面 = 機率只有 0.27%，與其相信「這麼衰」，不如相信「製程真的變了」。</p>
-    <p style="margin:0">左邊那條鐘形曲線和右邊的點是<b>同一份資料</b>。把 3σ 那條線往右拉成一整條水平線，就是 UCL。</p>
+      點落在外面 = 自然發生的機率只有 0.27%，與其相信「這麼剛好」，不如相信「製程真的變了」。</p>
+    <p style="margin:0">下一區左邊那條鐘形曲線和右邊那串點是<b>同一份資料</b>的兩種畫法。
+      把 3σ 的高度往右拉成一整條水平線，就是 UCL。</p>
   </div>
 </section>
 
 <!-- ============ 2. 控制台 ============ -->
 <section class="card">
   <h2><span class="num">2</span>製程模擬器</h2>
-  <p class="sub">先選一個情境，再拉滑桿感受每個參數對管制圖的影響。</p>
+  <p class="sub">選一個情境，再拉滑桿看每個參數如何改變管制圖。所有數值都是即時重算的。</p>
 
   <div class="controls">
     <div class="ctl">
@@ -224,7 +243,19 @@
   <div class="gallery" id="gallery"></div>
   <p class="sub" style="margin:16px 0 0">
     最容易搞混的是<b>偏移</b>和<b>趨勢</b>：偏移是「某個時間點<b>啪</b>地跳一階，之後維持在新位置」，
-    趨勢是「<b>持續</b>往同一個方向走，沒有停」。一個是事件造成的，一個是累積造成的，查法完全不同。</p>
+    趨勢是「<b>持續</b>往同一個方向走，沒有停」。一個由事件造成，一個由累積造成，查法完全不同。</p>
+
+  <h3 class="sh">型態 → 該去查什麼</h3>
+  <p style="margin:0 0 4px">型態、原因、處置是綁在一起的。判異規則只是幫忙自動認出型態，
+     真正的工作是型態後面那個「所以該去查什麼」。</p>
+  <table>
+    <tr><th style="width:130px">型態</th><th style="width:34%">第一個念頭</th><th>蝕刻現場的典型原因</th></tr>
+    <tr><td><b>偏移</b></td><td>翻 <b>event log</b> —— 那個時間點做了什麼？</td><td>PM、換 focus ring、換氣體鋼瓶</td></tr>
+    <tr><td><b>趨勢／漂移</b></td><td>查 <b>累積量</b> —— RF hours 到哪了？該 PM 了嗎？</td><td>腔壁沉積累積、化學液老化、零件磨耗</td></tr>
+    <tr><td><b>混流</b></td><td>查 <b>資料來源</b> —— 這張圖是不是混了兩台機？</td><td>A/B chamber 輪流跑貨卻畫在同一張圖</td></tr>
+    <tr><td><b>變異變大</b></td><td>查 <b>均勻度</b> —— 電漿／溫度分佈是不是不均了？</td><td>下電極溫度不均、電漿分佈異常</td></tr>
+    <tr><td><b>單點暴衝</b></td><td>查 <b>那一片</b>，或先查量測 —— 是製程還是量錯？</td><td>錯放片、夾持不良、量測機台讀錯</td></tr>
+  </table>
 </section>
 
 <!-- ============ 4. 判異規則 ============ -->
@@ -242,7 +273,7 @@
 <!-- ============ 5. 情境說明 ============ -->
 <section class="card">
   <h2><span class="num">5</span>這個型態代表什麼？怎麼處置？</h2>
-  <p class="sub">面試問「圖失控了你怎麼辦」，要的是這一段，不是規則條文。</p>
+  <p class="sub">失控之後要做什麼，比背出規則條文更重要。每換一個情境，這一區會說明它的物理原因與對應處置。</p>
   <div class="story" id="story"></div>
 </section>
 
@@ -264,6 +295,18 @@
     </div>
   </div>
 
+  <div class="lead">
+    <p style="margin:0 0 8px"><b>用停車來想，這個比喻可以一路用到底。</b></p>
+    <p style="margin:0 0 8px">
+      <b>車位有多寬</b> = 規格寬度 USL − LSL（客戶給的空間）　
+      <b>車身有多寬</b> = 製程寬度 6σ（實際做出來的散佈範圍）<br>
+      <b>Cp</b> = 車位寬 ÷ 車身寬，問的是「<b>塞不塞得進去</b>」。
+      <b>Cpk</b> 還要看「<b>有沒有停正</b>」。</p>
+    <p style="margin:0">所以「製程夠不夠瘦」＝ <b>車身夠不夠窄</b> ＝ <b>σ 夠不夠小</b> ＝ 一致性好不好。
+      製程寬度取 6σ，是因為常態分佈 ±3σ 已經涵蓋 99.73%，實務上就把它當成「這台機台實際會做出來的範圍」。
+      Cp = 1.0 代表車身剛好塞滿車位、兩側零空隙 —— 看似及格，其實非常危險（約 2700 ppm）。</p>
+  </div>
+
   <div class="chartbox"><div id="hist"></div></div>
   <div class="stats" id="capstats"></div>
   <p id="verdict" style="font-size:14px;margin:0"></p>
@@ -282,11 +325,63 @@
   </table>
 </section>
 
-<!-- ============ 7. 面試速查 ============ -->
+<!-- ============ 7. 規格從哪來 ============ -->
 <section class="card">
-  <h2><span class="num">7</span>面試速查：常見追問</h2>
+  <h2><span class="num">7</span>USL / LSL 是怎麼訂出來的</h2>
+  <p class="sub">「客戶決定」只講了一半。規格的源頭不是「試產做得到多少」，
+     而是「做到多少，元件才會正常工作」—— 試產資料的角色是驗證與談判，不是定義。</p>
 
-  <details><summary>管制圖失控了，你第一件事做什麼？</summary>
+  <h3 class="sh">主路徑：從功能反推（top-down）</h3>
+  <table>
+    <tr><th style="width:34px">①</th><td><b>元件端定出電性目標</b> —— Idsat、Vt、漏電要落在什麼範圍，來自電路設計與 device 模型。</td></tr>
+    <tr><th>②</th><td><b>敏感度分析：電性 ↔ 實體尺寸</b> —— 跑出「CD 每差 1 nm，Vt 漂多少 mV」，
+      把電性容忍度翻譯成尺寸容忍度。</td></tr>
+    <tr><th>③</th><td><b>容差分配 (tolerance budgeting)</b> —— 影響 CD 的不只蝕刻，微影、蝕刻、CMP 都有貢獻，
+      把總容差分配下去（平方和相加，不是直接相加）。<b>蝕刻分到的那一份，就是這一站的 USL / LSL。</b></td></tr>
+    <tr><th>④</th><td><b>用實際能力驗證</b> —— 這時才輪到試產：做得到嗎？算 Cpk。
+      不夠就改善製程、回頭談放寬、或改設計。</td></tr>
+  </table>
+
+  <h3 class="sh">另一條路：統計暫訂（bottom-up）</h3>
+  <p style="margin:0">當某個參數與功能的關係還不明確時（新製程、監控型參數、研發階段），
+     會先拿一段確認良好的試產資料取 <b>μ ± 4σ</b> 當暫定規格，等 device 電性與良率資料回來再修正。
+     <b>用 ±4σ 而不是 ±3σ</b> 是關鍵 —— 取 ±3σ 的話規格就等於製程寬度，Cpk 直接鎖死在 1.0，這個指標就沒意義了。</p>
+
+  <div class="lead">
+    <p style="margin:0 0 8px"><b>絕對不能做的事：把 UCL/LCL 直接抄成 USL/LSL。</b></p>
+    <p style="margin:0">管制界限是製程自己算出來的。這樣做等於宣告「做得到什麼，什麼就是規格」——
+      製程一變差，σ 變大、界限撐開、規格跟著放寬，Cpk 永遠停在 1.0 附近，
+      而客戶要的東西被悄悄改掉了。<b>規格必須獨立於製程而存在。</b></p>
+  </div>
+
+  <h3 class="sh">OOC ≠ OOS</h3>
+  <table>
+    <tr><th style="width:24%"></th><th>管制界限 UCL / LCL</th><th>規格界限 USL / LSL</th></tr>
+    <tr><td><b>誰決定</b></td><td>製程資料自己算的</td><td>元件功能需求反推的</td></tr>
+    <tr><td><b>會不會變</b></td><td>製程改變就要重算</td><td>除非設計變更，否則不動</td></tr>
+    <tr><td><b>超出代表</b></td><td>製程變了（<b>OOC</b>, Out Of Control）</td><td>東西可能不能用（<b>OOS</b>, Out Of Spec）</td></tr>
+    <tr><td><b>怎麼處理</b></td><td>查原因，可能繼續生產</td><td>卡貨，走 MRB／報廢／重工</td></tr>
+  </table>
+  <p style="margin:10px 0 0">兩者可以獨立發生：<b>OOC 但沒 OOS</b> 是製程偏了但還在規格內 —— 這是預警，SPC 的價值就在這；
+     <b>OOS 但沒 OOC</b> 是製程很穩定但能力本來就不足 —— 穩定地做出不良品。</p>
+
+  <h3 class="sh">實務上還有一層：內規</h3>
+  <pre class="formula">        客戶規格（外規）
+    ┌─────────────────────────┐
+    │     內規（廠內管制）      │   ← 留緩衝，內規超了先處理，還來得及
+    │   ┌─────────────────┐   │
+    │   │   管制界限        │   │   ← 製程自己的實力
+    │   └─────────────────┘   │
+    └─────────────────────────┘
+
+    由內而外：管制界限 ⊂ 內規 ⊂ 客戶規格</pre>
+</section>
+
+<!-- ============ 8. 常見追問 ============ -->
+<section class="card">
+  <h2><span class="num">8</span>常見追問</h2>
+
+  <details><summary>管制圖失控了，第一件事做什麼？</summary>
     <p>先確認「是製程真的變了，還是量測／記錄出錯」。依序：查量測系統 → 查是否有事件（PM、換件、換料、換機台）→ 看型態屬於哪一類（偏移／趨勢／變異變大／混流）→ 才動製程。
     切忌看到一點超標就調 recipe，那會把共同原因當特殊原因處理，反而讓變異變大。</p></details>
 
@@ -307,7 +402,7 @@
     現場常見 n=3~5。半導體很多量測很貴，只能 n=1，那就改用 I-MR 圖 —— 把上面的 n 拉到 1 看看圖會怎麼變。</p></details>
 
   <details><summary>SPC 跟 APC / R2R 有什麼不同？</summary>
-    <p>SPC 是<b>監控</b>：告訴你製程有沒有變，變了叫人來看。APC（Advanced Process Control）／R2R（Run-to-Run）是<b>回饋控制</b>：自動依上一批的量測結果調整下一批的 recipe。
+    <p>SPC 是<b>監控</b>：判斷製程有沒有變，變了就通知人來看。APC（Advanced Process Control）／R2R（Run-to-Run）是<b>回饋控制</b>：自動依上一批的量測結果調整下一批的 recipe。
     兩者並存 —— 但要注意 R2R 會把漂移「補掉」，讓管制圖上看起來很平，所以有 R2R 的機台通常還要額外監控「控制器補償量」本身。這題答得出來會很加分。</p></details>
 </section>
 
