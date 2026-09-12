@@ -29,9 +29,11 @@
 
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
-    font:15px/1.7 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;}
+    font:15px/1.75 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;}
   .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
-  header h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+  @media (prefers-reduced-motion:no-preference){.card{transition:border-color .2s}}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  header h1{font-size:27px;margin:0 0 6px;letter-spacing:-.015em;font-weight:700;text-wrap:balance}
   header p{margin:0;color:var(--muted);max-width:64ch}
   .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:20px 0}
   .card h2{font-size:17px;margin:0 0 4px;display:flex;align-items:center;gap:9px}
@@ -79,7 +81,7 @@
   .oos{fill:var(--danger);opacity:.07}
 
   pre.formula{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;
-    font:12.5px/1.85 ui-monospace,"Cascadia Mono",Consolas,monospace;overflow-x:auto;margin:10px 0 0}
+    font:12.5px/1.9 "IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;overflow-x:auto;margin:10px 0 0}
   .rules{display:grid;gap:8px;margin-top:12px}
   .rule{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;
     padding:10px 12px;border:1px solid var(--line);border-radius:9px}
@@ -98,14 +100,16 @@
 
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0}
   .stat{border:1px solid var(--line);border-radius:9px;padding:12px 14px}
-  .stat .v{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .stat .v{font:500 25px/1.2 "IBM Plex Mono",ui-monospace,Consolas,monospace;
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em}
   .stat .l{font-size:12px;color:var(--muted)}
   .stat.good .v{color:var(--accent)} .stat.bad .v{color:var(--danger)} .stat.warn .v{color:var(--warn)}
 
   table{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:10px}
   th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
   th{color:var(--muted);font-weight:600;font-size:12.5px}
-  code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12.5px}
+  code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;
+    font:12.5px "IBM Plex Mono",ui-monospace,Consolas,monospace}
   details{border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin-top:10px}
   details summary{cursor:pointer;font-weight:600;font-size:14px}
   details p{color:var(--muted);font-size:13.5px}
@@ -113,6 +117,7 @@
 </style>
 </head>
 <body>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <div class="wrap">
 
 <header>
