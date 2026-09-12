@@ -1,0 +1,13 @@
+{
+  "name": "spc-playground",
+  "version": "1.0.0",
+  "description": "Interactive SPC (Statistical Process Control) teaching page for semiconductor etch, with zero dependencies.",
+  "main": "src/spc.js",
+  "scripts": {
+    "test": "node test/spc.test.js",
+    "build:artifact": "node tools/build-artifact.js",
+    "start": "npx -y http-server -p 4321 -c-1"
+  },
+  "keywords": ["spc", "control-chart", "cpk", "semiconductor", "etch", "nelson-rules"],
+  "license": "MIT"
+}

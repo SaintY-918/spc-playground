@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPC Playground — 蝕刻製程管制圖互動教學</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --panel:#ffffff; --ink:#1c1c1a; --muted:#6b6b66; --line:#e2e1dc;
+    --accent:#2f6f5e; --accent-soft:#e7f0ec; --danger:#c03a2b; --warn:#c78a1e;
+    --zoneA:rgba(192,58,43,.10); --zoneB:rgba(199,138,30,.10); --zoneC:rgba(47,111,94,.08);
+    --trace:#3a3a37; --bar:#b9c9c2;
+  }
+  :root:not([data-theme="light"]) { }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#16171a; --panel:#1e2024; --ink:#e9e8e4; --muted:#9a9a93; --line:#32343a;
+      --accent:#6fbfa4; --accent-soft:#1d2c28; --danger:#e8705f; --warn:#e0ae53;
+      --zoneA:rgba(232,112,95,.12); --zoneB:rgba(224,174,83,.12); --zoneC:rgba(111,191,164,.10);
+      --trace:#c9c8c3; --bar:#3c5851;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#16171a; --panel:#1e2024; --ink:#e9e8e4; --muted:#9a9a93; --line:#32343a;
+    --accent:#6fbfa4; --accent-soft:#1d2c28; --danger:#e8705f; --warn:#e0ae53;
+    --zoneA:rgba(232,112,95,.12); --zoneB:rgba(224,174,83,.12); --zoneC:rgba(111,191,164,.10);
+    --trace:#c9c8c3; --bar:#3c5851;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.7 "Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px}
+  header h1{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+  header p{margin:0;color:var(--muted);max-width:64ch}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:20px 0}
+  .card h2{font-size:17px;margin:0 0 4px;display:flex;align-items:center;gap:9px}
+  .card h2 .num{background:var(--accent);color:#fff;width:22px;height:22px;border-radius:50%;
+    font-size:12px;display:grid;place-items:center;flex:none;font-weight:600}
+  .card > p.sub{margin:0 0 16px;color:var(--muted);font-size:14px}
+  .lead{background:var(--accent-soft);border-left:3px solid var(--accent);padding:12px 16px;border-radius:0 8px 8px 0;margin:14px 0}
+  .lead b{color:var(--accent)}
+
+  .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px 20px;margin-bottom:8px}
+  .ctl label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:4px}
+  .ctl label b{color:var(--ink);font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  select,button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);
+    border-radius:8px;padding:7px 11px}
+  button{cursor:pointer}
+  button:hover{border-color:var(--accent)}
+  button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+  .chk{display:flex;gap:7px;align-items:flex-start;font-size:13.5px;cursor:pointer}
+  .chk input{accent-color:var(--accent);margin-top:4px;flex:none}
+
+  .chartbox{overflow-x:auto;margin:6px 0}
+  svg.cc{width:100%;height:auto;min-width:640px;display:block}
+  .zoneA{fill:var(--zoneA)} .zoneB{fill:var(--zoneB)} .zoneC{fill:var(--zoneC)}
+  .zoneLetter{fill:var(--muted);font-size:10px;opacity:.7}
+  .ucl{stroke:var(--danger);stroke-width:1.4;stroke-dasharray:none}
+  .cl{stroke:var(--accent);stroke-width:1.4;stroke-dasharray:5 4}
+  .spec{stroke:var(--ink);stroke-width:1.6}
+  .target{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 4}
+  .ucl-t{fill:var(--danger)} .cl-t{fill:var(--accent)}
+  .limitLabel,.specLabel{font-size:11px;font-variant-numeric:tabular-nums}
+  .specLabel{fill:var(--ink)}
+  .trace{fill:none;stroke:var(--trace);stroke-width:1.3;opacity:.75}
+  .pt{fill:var(--trace);cursor:pointer}
+  .pt.bad{fill:var(--danger);stroke:var(--panel);stroke-width:1.5}
+  .ruleTag{fill:var(--danger);font-size:10.5px;text-anchor:middle;font-weight:700}
+  .axis{stroke:var(--line)} .tick{fill:var(--muted);font-size:10px;text-anchor:middle}
+  .chartTitle{fill:var(--ink);font-size:12.5px;font-weight:600}
+  .bell{fill:none;stroke:var(--accent);stroke-width:1.5}
+  .bellAxis{stroke:var(--line)} .bellTick{stroke:var(--muted)}
+  .bellLabel{fill:var(--muted);font-size:10px}
+  .bellTitle{fill:var(--muted);font-size:11px}
+  .bar{fill:var(--bar)}
+  .oos{fill:var(--danger);opacity:.07}
+
+  pre.formula{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;
+    font:12.5px/1.85 ui-monospace,"Cascadia Mono",Consolas,monospace;overflow-x:auto;margin:10px 0 0}
+  .rules{display:grid;gap:8px;margin-top:12px}
+  .rule{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;
+    padding:10px 12px;border:1px solid var(--line);border-radius:9px}
+  .rule.hit{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 6%,transparent)}
+  .rule .nm{font-size:13.5px;font-weight:600}
+  .rule .dt{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .rule .etch{font-size:12.5px;color:var(--accent);margin-top:3px}
+  .badge{font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--danger);white-space:nowrap;
+    border:1px solid var(--danger);border-radius:20px;padding:1px 9px;align-self:center}
+  .badge.zero{color:var(--muted);border-color:var(--line)}
+
+  .story{border:1px dashed var(--line);border-radius:9px;padding:14px 16px;margin-top:14px;font-size:14px}
+  .story .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+  .story p{margin:4px 0 12px}
+  .story p:last-child{margin-bottom:0}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:14px 0}
+  .stat{border:1px solid var(--line);border-radius:9px;padding:12px 14px}
+  .stat .v{font-size:24px;font-weight:650;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .stat .l{font-size:12px;color:var(--muted)}
+  .stat.good .v{color:var(--accent)} .stat.bad .v{color:var(--danger)} .stat.warn .v{color:var(--warn)}
+
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:10px}
+  th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;font-size:12.5px}
+  code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12.5px}
+  details{border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin-top:10px}
+  details summary{cursor:pointer;font-weight:600;font-size:14px}
+  details p{color:var(--muted);font-size:13.5px}
+  footer{color:var(--muted);font-size:13px;text-align:center;margin-top:36px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>SPC Playground</h1>
+  <p>把統計製程管制 (Statistical Process Control) 從「背名詞」變成「看得見」。
+     所有圖都是即時算的：拉滑桿改變製程，管制圖就跟著動。以蝕刻製程為例。</p>
+</header>
+
+<!-- ============ 1. 觀念橋接 ============ -->
+<section class="card">
+  <h2><span class="num">1</span>先把已知的接上未知的</h2>
+  <p class="sub">你已經懂常態分佈跟 3 個標準差。管制圖其實就是把那張鐘形圖轉 90 度，然後在時間軸上一直畫點。</p>
+  <div class="lead">
+    <p style="margin:0 0 8px"><b>UCL / LCL 就是 μ ± 3σ。</b>沒別的了。
+      Upper / Lower Control Limit ＝ 上／下管制界限。點落在裡面 = 只有隨機波動；
+      點落在外面 = 機率只有 0.27%，與其相信「這麼衰」，不如相信「製程真的變了」。</p>
+    <p style="margin:0">左邊那條鐘形曲線和右邊的點是<b>同一份資料</b>。把 3σ 那條線往右拉成一整條水平線，就是 UCL。</p>
+  </div>
+</section>
+
+<!-- ============ 2. 控制台 ============ -->
+<section class="card">
+  <h2><span class="num">2</span>製程模擬器</h2>
+  <p class="sub">先選一個情境，再拉滑桿感受每個參數對管制圖的影響。</p>
+
+  <div class="controls">
+    <div class="ctl">
+      <label for="scenario">製程情境</label>
+      <select id="scenario" style="width:100%"></select>
+    </div>
+    <div class="ctl">
+      <label for="n">每組樣本數 n（一次量幾片）= <b id="nv">5</b></label>
+      <input type="range" id="n" min="1" max="10" step="1" value="5">
+    </div>
+    <div class="ctl">
+      <label for="groups">組數（時間上取幾次樣）= <b id="groupsv">30</b></label>
+      <input type="range" id="groups" min="20" max="60" step="1" value="30">
+    </div>
+    <div class="ctl">
+      <label for="sigma">製程標準差 σ = <b id="sigmav">1.0</b> nm/min</label>
+      <input type="range" id="sigma" min="0.3" max="3" step="0.1" value="1">
+    </div>
+  </div>
+
+  <div class="row">
+    <button id="reroll">🎲 換一批資料</button>
+    <label class="chk"><input type="checkbox" id="bell" checked> 顯示左側常態分佈</label>
+    <label class="chk"><input type="checkbox" id="letters" checked> 顯示 A/B/C 區帶字母</label>
+    <label class="chk"><input type="checkbox" id="frozen">
+      <span>凍結管制界限（用前 15 組當基準）<br>
+      <span style="color:var(--muted);font-size:12px">真實工廠的做法：Phase I 先建界限，Phase II 拿它監控後續生產</span></span></label>
+  </div>
+
+  <div class="chartbox"><div id="chart1"></div></div>
+  <div class="chartbox"><div id="chart2"></div></div>
+
+  <details open>
+    <summary>管制界限是怎麼算出來的？（點開看實際數字）</summary>
+    <p style="margin:8px 0 0">現場不用整體標準差，而是用「組內全距 R̄」去估 σ。
+      因為組內變異＝製程的短期雜訊（純的共同原因），把它拿來當尺，才量得出組間的偏移。
+      <b>用整體 σ 算界限是新手最常犯的錯</b>：製程一偏移，整體 σ 跟著變大，界限也跟著撐開，結果永遠抓不到失控。</p>
+    <pre class="formula" id="formula"></pre>
+  </details>
+</section>
+
+<!-- ============ 3. 判異規則 ============ -->
+<section class="card">
+  <h2><span class="num">3</span>判異規則（Western Electric / Nelson Rules）</h2>
+  <p class="sub">「沒超出界限」不等於「正常」。八條規則各自抓一種型態；勾選來看哪一條抓到了目前這批資料。
+     圖上紅點旁邊的數字，就是它違反的規則編號。</p>
+  <div class="row" style="margin-top:0">
+    <button id="allon">全部啟用</button>
+    <button id="only1">只留規則 1</button>
+  </div>
+  <div class="rules" id="rules"></div>
+</section>
+
+<!-- ============ 4. 情境說明 ============ -->
+<section class="card">
+  <h2><span class="num">4</span>這個型態代表什麼？怎麼處置？</h2>
+  <p class="sub">面試問「圖失控了你怎麼辦」，要的是這一段，不是規則條文。</p>
+  <div class="story" id="story"></div>
+</section>
+
+<!-- ============ 5. 製程能力 ============ -->
+<section class="card">
+  <h2><span class="num">5</span>Cp / Cpk：管制界限 ≠ 規格界限</h2>
+  <p class="sub">這是最常被混淆的地方，先記這句：
+     <b>UCL/LCL 是製程自己說的話（它做得到什麼），USL/LSL 是客戶說的話（它要什麼）。</b>
+     兩者完全無關，Cp/Cpk 就是在比這兩件事差多少。</p>
+
+  <div class="controls">
+    <div class="ctl">
+      <label for="spec">規格半寬（USL−LSL 的一半）= <b id="specv">4.0</b></label>
+      <input type="range" id="spec" min="1" max="10" step="0.1" value="4">
+    </div>
+    <div class="ctl">
+      <label for="shift">製程中心相對規格中心偏移 = <b id="shiftv">0.0</b></label>
+      <input type="range" id="shift" min="-4" max="4" step="0.1" value="0">
+    </div>
+  </div>
+
+  <div class="chartbox"><div id="hist"></div></div>
+  <div class="stats" id="capstats"></div>
+  <p id="verdict" style="font-size:14px;margin:0"></p>
+
+  <table>
+    <tr><th style="width:90px">指標</th><th>一句話講清楚</th><th style="width:34%">公式</th></tr>
+    <tr><td><b>Cp</b></td><td>製程「夠不夠瘦」。規格寬度能塞下幾個 6σ。<br>
+        <span style="color:var(--muted)">完全不管製程有沒有偏掉 —— 就算整批都做在規格外，Cp 還是可以很漂亮。</span></td>
+        <td><code>(USL−LSL) / 6σ</code></td></tr>
+    <tr><td><b>Cpk</b></td><td>製程「夠不夠瘦，而且有沒有偏」。看離最近那條規格還有幾個 3σ。<br>
+        <span style="color:var(--muted)">Cpk ≤ Cp 恆成立。兩者差距就是偏移量。</span></td>
+        <td><code>min( (USL−μ)/3σ , (μ−LSL)/3σ )</code></td></tr>
+    <tr><td><b>Pp/Ppk</b></td><td>同樣的公式，但 σ 改用<b>整體</b>樣本標準差（長期，含組間漂移）。<br>
+        <span style="color:var(--muted)">Cpk 遠大於 Ppk ⇒ 製程短期很穩，但長期一直漂 ⇒ 去查漂移的原因。</span></td>
+        <td><code>σ 改用 s（整體）</code></td></tr>
+  </table>
+</section>
+
+<!-- ============ 6. 面試速查 ============ -->
+<section class="card">
+  <h2><span class="num">6</span>面試速查：常見追問</h2>
+
+  <details><summary>管制圖失控了，你第一件事做什麼？</summary>
+    <p>先確認「是製程真的變了，還是量測／記錄出錯」。依序：查量測系統 → 查是否有事件（PM、換件、換料、換機台）→ 看型態屬於哪一類（偏移／趨勢／變異變大／混流）→ 才動製程。
+    切忌看到一點超標就調 recipe，那會把共同原因當特殊原因處理，反而讓變異變大。</p></details>
+
+  <details><summary>為什麼管制界限用 R̄ 算，不直接用整體標準差？</summary>
+    <p>因為管制圖要偵測的就是「組間的變化」。如果把組間的漂移也算進 σ，界限會被撐寬，漂移就永遠抓不到 —— 等於拿犯人當尺量犯人。
+    R̄/d₂ 估的是<b>組內</b>短期變異，是乾淨的共同原因基準。</p></details>
+
+  <details><summary>Cpk 1.33 是什麼概念？</summary>
+    <p>1.33 = 製程中心離最近規格有 4σ，雙邊不良率約 63 ppm，是業界最常見的量產放行門檻。
+    1.00 = 3σ，約 2700 ppm，太危險。1.67 = 5σ，約 0.6 ppm。所謂「六標準差」指的是 Cpk 2.0（考慮 1.5σ 長期偏移後就是那個著名的 3.4 ppm）。</p></details>
+
+  <details><summary>X̄ 圖和 R 圖要先看哪一張？</summary>
+    <p><b>先看 R 圖。</b>因為 X̄ 圖的管制界限是用 R̄ 算的 —— R 圖若失控，代表 R̄ 本身不可信，X̄ 圖的界限就是錯的，看了也沒意義。
+    先把變異穩住，再談平均值。試試上面的「單片異常」情境：X̄ 圖幾乎沒反應，R 圖直接爆掉。</p></details>
+
+  <details><summary>n 越大越好嗎？</summary>
+    <p>n 越大，組平均的標準差 σ/√n 越小，管制界限越窄，越能抓到小偏移（靈敏度高）。但量測成本也越高，而且界限太窄會頻繁誤報 (false alarm)。
+    現場常見 n=3~5。半導體很多量測很貴，只能 n=1，那就改用 I-MR 圖 —— 把上面的 n 拉到 1 看看圖會怎麼變。</p></details>
+
+  <details><summary>SPC 跟 APC / R2R 有什麼不同？</summary>
+    <p>SPC 是<b>監控</b>：告訴你製程有沒有變，變了叫人來看。APC（Advanced Process Control）／R2R（Run-to-Run）是<b>回饋控制</b>：自動依上一批的量測結果調整下一批的 recipe。
+    兩者並存 —— 但要注意 R2R 會把漂移「補掉」，讓管制圖上看起來很平，所以有 R2R 的機台通常還要額外監控「控制器補償量」本身。這題答得出來會很加分。</p></details>
+</section>
+
+<footer>SPC Playground · 所有統計與繪圖皆為手刻，無外部相依 · MIT License</footer>
+</div>
+
+<script src="src/spc.js"></script>
+<script src="src/scenarios.js"></script>
+<script src="src/chart.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>
