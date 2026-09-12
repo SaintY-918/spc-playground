@@ -116,22 +116,18 @@
       Xbarbar: CL, Rbar: Rbar, sigmaWithin: sigmaWithin,
       primary: {
         key: 'xbar',
-        label: 'X̄-chart（每組平均值）',
-        unitLabel: '組平均',
         values: xbar, CL: CL, sigma: sigmaXbar,
         UCL: CL + 3 * sigmaXbar, LCL: CL - 3 * sigmaXbar,
         formula: [
           'CL  = X̿ = ' + CL.toFixed(3),
           'UCL = X̿ + A₂·R̄ = ' + CL.toFixed(3) + ' + ' + c.A2 + '×' + Rbar.toFixed(3) + ' = ' + (CL + 3 * sigmaXbar).toFixed(3),
           'LCL = X̿ − A₂·R̄ = ' + (CL - 3 * sigmaXbar).toFixed(3),
-          'σ̂（單片）= R̄/d₂ = ' + Rbar.toFixed(3) + ' / ' + c.d2 + ' = ' + sigmaWithin.toFixed(3),
-          'σ（組平均）= σ̂/√n = ' + sigmaXbar.toFixed(3)
+          'sigma_within = R̄/d₂ = ' + Rbar.toFixed(3) + ' / ' + c.d2 + ' = ' + sigmaWithin.toFixed(3),
+          'sigma_Xbar   = sigma_within/√n = ' + sigmaXbar.toFixed(3)
         ]
       },
       secondary: {
         key: 'r',
-        label: 'R-chart（每組全距 = 組內最大−最小）',
-        unitLabel: '全距',
         values: R, CL: Rbar, sigma: (c.D4 * Rbar - Rbar) / 3,
         UCL: c.D4 * Rbar, LCL: c.D3 * Rbar,
         formula: [
@@ -153,21 +149,17 @@
       Xbarbar: CL, Rbar: MRbar, sigmaWithin: sigma,
       primary: {
         key: 'i',
-        label: 'I-chart（個別值，n=1 沒得平均）',
-        unitLabel: '個別值',
         values: values, CL: CL, sigma: sigma,
         UCL: CL + 3 * sigma, LCL: CL - 3 * sigma,
         formula: [
           'CL  = X̄ = ' + CL.toFixed(3),
-          'σ̂ = MR̄/d₂ = ' + MRbar.toFixed(3) + ' / 1.128 = ' + sigma.toFixed(3),
+          'sigma = MR̄/d₂ = ' + MRbar.toFixed(3) + ' / 1.128 = ' + sigma.toFixed(3),
           'UCL = X̄ + 2.66·MR̄ = ' + (CL + 3 * sigma).toFixed(3),
           'LCL = X̄ − 2.66·MR̄ = ' + (CL - 3 * sigma).toFixed(3)
         ]
       },
       secondary: {
         key: 'mr',
-        label: 'MR-chart（相鄰兩點的差）',
-        unitLabel: '移動全距',
         values: MR, CL: MRbar, sigma: (3.267 * MRbar - MRbar) / 3,
         UCL: 3.267 * MRbar, LCL: 0,
         formula: ['CL = MR̄ = ' + MRbar.toFixed(3), 'UCL = 3.267·MR̄ = ' + (3.267 * MRbar).toFixed(3), 'LCL = 0']
@@ -176,32 +168,8 @@
   }
 
   /* ---------------------------- 判異規則 ---------------------------- */
-  var RULES = [
-    { id: 1, name: '1 點超出 3σ 界限',
-      why: '最直接的失控訊號。常態下這種點自然發生的機率只有 0.27%，出現就當它是特殊原因。',
-      etch: '蝕刻現場：RF 功率異常、流量計故障、錯放片。' },
-    { id: 2, name: '連續 9 點落在中心線同一側',
-      why: '製程平均已經移位，只是還沒大到超出界限。管制圖抓的是「變化」，不是只抓「超標」。',
-      etch: '蝕刻現場：PM 保養後基準改變、換新鋼瓶、更換 focus ring。' },
-    { id: 3, name: '連續 6 點持續上升或下降',
-      why: '趨勢 (trend)。代表有個隨時間累積的因素在推著製程走。',
-      etch: '蝕刻現場：chamber 壁沉積累積造成蝕刻速率漂移、化學液老化。' },
-    { id: 4, name: '連續 14 點上下交替',
-      why: '過於規律的鋸齒，不是隨機。通常是兩個來源交錯，或操作員過度調機 (over-adjustment)。',
-      etch: '蝕刻現場：兩個 chamber／兩台機台輪流跑，卻畫在同一張圖上。' },
-    { id: 5, name: '連續 3 點中有 2 點在同側 2σ 外',
-      why: '比規則 1 敏感的偏移偵測，能更早發現平均跑掉。',
-      etch: '蝕刻現場：溫度控制器開始不穩的早期徵兆。' },
-    { id: 6, name: '連續 5 點中有 4 點在同側 1σ 外',
-      why: '幅度小但持續的偏移。',
-      etch: '蝕刻現場：氣體流量緩慢偏離設定值。' },
-    { id: 7, name: '連續 15 點全部落在 1σ 內',
-      why: '資料「太漂亮」反而有問題。常態下 15 點全落在 ±1σ 的機率只有 0.068%。',
-      etch: '蝕刻現場：量測解析度不足（機台位數不夠）、管制界限算太寬、或資料被修飾過。這條規則考的是「資料太乾淨也是一種異常」的觀念。' },
-    { id: 8, name: '連續 8 點全部在 1σ 外（不分兩側）',
-      why: '中間被掏空 → 雙峰。單一穩定製程不會長這樣。',
-      etch: '蝕刻現場：兩台機台／兩種產品混流，應該拆開分別管制。' }
-  ];
+  /* 規則的名稱與說明文字放在 i18n.js，這裡只有編號與偵測邏輯。 */
+  var RULE_IDS = [1, 2, 3, 4, 5, 6, 7, 8];
 
   /**
    * 回傳長度與 values 相同的陣列，每格是該點違反的規則 id 陣列。
@@ -209,7 +177,7 @@
    */
   function detectViolations(values, CL, sigma, enabled) {
     var on = {};
-    (enabled || RULES.map(function (r) { return r.id; })).forEach(function (id) { on[id] = true; });
+    (enabled || RULE_IDS).forEach(function (id) { on[id] = true; });
 
     var N = values.length;
     var hits = [];
@@ -301,15 +269,16 @@
     return { cp: cp, cpu: cpu, cpl: cpl, cpk: cpk, ppm: ppm, k: Math.abs(mu - (USL + LSL) / 2) / ((USL - LSL) / 2) };
   }
 
+  /** 只回傳等級；對應的說明文字在 i18n.js 的 ui.verdict.* */
   function capabilityVerdict(cpk) {
-    if (cpk < 1.00) return { level: 'bad',  text: '不合格（< 1.00）：規格外的品質完全靠檢驗攔，製程本身守不住。' };
-    if (cpk < 1.33) return { level: 'warn', text: '勉強（1.00–1.33）：沒有緩衝，製程稍微動一下就出不良。' };
-    if (cpk < 1.67) return { level: 'ok',   text: '及格（1.33–1.67）：業界最常見的量產門檻，約 63 ppm。' };
-    return { level: 'good', text: '良好（≥ 1.67）：約 0.6 ppm，接近半導體關鍵層的要求。' };
+    if (cpk < 1.00) return 'bad';
+    if (cpk < 1.33) return 'warn';
+    if (cpk < 1.67) return 'ok';
+    return 'good';
   }
 
   return {
-    CONSTANTS: CONSTANTS, RULES: RULES,
+    CONSTANTS: CONSTANTS, RULE_IDS: RULE_IDS,
     makeNormal: makeNormal, generate: generate,
     analyze: analyze, analyzeXbarR: analyzeXbarR, analyzeIMR: analyzeIMR,
     detectViolations: detectViolations,
