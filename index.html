@@ -103,6 +103,13 @@
     border:1px solid var(--danger);border-radius:20px;padding:1px 9px;align-self:center}
   .badge.zero{color:var(--muted);border-color:var(--line)}
 
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;margin-top:16px}
+  .gal h3{font-size:14px;margin:0 0 2px}
+  .gal .en{font-size:11.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+  .gal .mn{border:1px solid var(--line);border-radius:8px;background:var(--bg);margin:8px 0 7px;overflow:hidden}
+  .gal svg.mini{width:100%;height:96px;display:block}
+  .gal .d{font-size:12.5px;color:var(--muted)}
+  .gal .d b{color:var(--ink)}
   .story{border:1px dashed var(--line);border-radius:9px;padding:14px 16px;margin-top:14px;font-size:14px}
   .story .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
   .story p{margin:4px 0 12px}
@@ -208,9 +215,21 @@
   </details>
 </section>
 
-<!-- ============ 3. 判異規則 ============ -->
+<!-- ============ 3. 型態圖鑑 ============ -->
 <section class="card">
-  <h2><span class="num">3</span>判異規則（Western Electric / Nelson Rules）</h2>
+  <h2><span class="num">3</span>型態圖鑑：失控長什麼樣</h2>
+  <p class="sub">失控不是只有一種樣子。<b>型態 → 原因 → 處置</b>是綁在一起的，
+     所以第一步永遠是先認出「這是哪一種型態」。下面五張是同一台機台的五種狀況，
+     灰色帶是管制界限內，紅點是超出界限。</p>
+  <div class="gallery" id="gallery"></div>
+  <p class="sub" style="margin:16px 0 0">
+    最容易搞混的是<b>偏移</b>和<b>趨勢</b>：偏移是「某個時間點<b>啪</b>地跳一階，之後維持在新位置」，
+    趨勢是「<b>持續</b>往同一個方向走，沒有停」。一個是事件造成的，一個是累積造成的，查法完全不同。</p>
+</section>
+
+<!-- ============ 4. 判異規則 ============ -->
+<section class="card">
+  <h2><span class="num">4</span>判異規則（Western Electric / Nelson Rules）</h2>
   <p class="sub">「沒超出界限」不等於「正常」。八條規則各自抓一種型態；勾選來看哪一條抓到了目前這批資料。
      圖上紅點旁邊的數字，就是它違反的規則編號。</p>
   <div class="row" style="margin-top:0">
@@ -220,16 +239,16 @@
   <div class="rules" id="rules"></div>
 </section>
 
-<!-- ============ 4. 情境說明 ============ -->
+<!-- ============ 5. 情境說明 ============ -->
 <section class="card">
-  <h2><span class="num">4</span>這個型態代表什麼？怎麼處置？</h2>
+  <h2><span class="num">5</span>這個型態代表什麼？怎麼處置？</h2>
   <p class="sub">面試問「圖失控了你怎麼辦」，要的是這一段，不是規則條文。</p>
   <div class="story" id="story"></div>
 </section>
 
-<!-- ============ 5. 製程能力 ============ -->
+<!-- ============ 6. 製程能力 ============ -->
 <section class="card">
-  <h2><span class="num">5</span>Cp / Cpk：管制界限 ≠ 規格界限</h2>
+  <h2><span class="num">6</span>Cp / Cpk：管制界限 ≠ 規格界限</h2>
   <p class="sub">這是最常被混淆的地方，先記這句：
      <b>UCL/LCL 是製程自己說的話（它做得到什麼），USL/LSL 是客戶說的話（它要什麼）。</b>
      兩者完全無關，Cp/Cpk 就是在比這兩件事差多少。</p>
@@ -263,9 +282,9 @@
   </table>
 </section>
 
-<!-- ============ 6. 面試速查 ============ -->
+<!-- ============ 7. 面試速查 ============ -->
 <section class="card">
-  <h2><span class="num">6</span>面試速查：常見追問</h2>
+  <h2><span class="num">7</span>面試速查：常見追問</h2>
 
   <details><summary>管制圖失控了，你第一件事做什麼？</summary>
     <p>先確認「是製程真的變了，還是量測／記錄出錯」。依序：查量測系統 → 查是否有事件（PM、換件、換料、換機台）→ 看型態屬於哪一類（偏移／趨勢／變異變大／混流）→ 才動製程。

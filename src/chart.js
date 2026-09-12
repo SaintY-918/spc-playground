@@ -176,5 +176,35 @@
     container.innerHTML = s.join('');
   }
 
-  return { controlChart: controlChart, capabilityHistogram: capabilityHistogram };
+  /**
+   * 型態圖鑑用的縮圖：只有 CL、±3σ 兩條界限和一條折線。
+   */
+  function miniChart(container, values, CL, sigma) {
+    var W = 260, H = 96, padX = 6, padY = 10;
+    var lo = CL - 4.2 * sigma, hi = CL + 4.2 * sigma;
+    values.forEach(function (v) { lo = Math.min(lo, v); hi = Math.max(hi, v); });
+    var sp = (hi - lo) * 0.08; lo -= sp; hi += sp;
+
+    function X(i) { return padX + (W - 2 * padX) * i / (values.length - 1); }
+    function Y(v) { return H - padY - (v - lo) / (hi - lo) * (H - 2 * padY); }
+
+    var s = ['<svg viewBox="0 0 ' + W + ' ' + H + '" class="mini" preserveAspectRatio="none" role="img">'];
+    s.push('<rect x="' + padX + '" y="' + Y(CL + 3 * sigma) + '" width="' + (W - 2 * padX) +
+      '" height="' + Math.max(0, Y(CL - 3 * sigma) - Y(CL + 3 * sigma)) + '" class="zoneC"/>');
+    [[3, 'ucl'], [0, 'cl'], [-3, 'ucl']].forEach(function (p) {
+      var y = Y(CL + p[0] * sigma);
+      s.push('<line x1="' + padX + '" y1="' + y + '" x2="' + (W - padX) + '" y2="' + y + '" class="' + p[1] + '"/>');
+    });
+    s.push('<path d="' + values.map(function (v, i) {
+      return (i ? 'L' : 'M') + fmt(X(i), 1) + ' ' + fmt(Y(v), 1);
+    }).join(' ') + '" class="trace"/>');
+    values.forEach(function (v, i) {
+      var out = Math.abs(v - CL) > 3 * sigma;
+      s.push('<circle cx="' + fmt(X(i), 1) + '" cy="' + fmt(Y(v), 1) + '" r="2.6" class="pt' + (out ? ' bad' : '') + '"/>');
+    });
+    s.push('</svg>');
+    container.innerHTML = s.join('');
+  }
+
+  return { controlChart: controlChart, capabilityHistogram: capabilityHistogram, miniChart: miniChart };
 });

@@ -64,6 +64,44 @@
     });
   }
 
+  /* ---------- 型態圖鑑（靜態，只畫一次）---------- */
+  var PATTERNS = [
+    { t: '受控', en: 'In control',
+      d: '沒有型態，點在中心線附近隨機上下。只有<b>共同原因</b>。<br><b>處置：什麼都不做。</b>去調機反而會放大變異。',
+      off: function () { return 0; } },
+    { t: '偏移', en: 'Shift',
+      d: '某一刻<b>啪地跳一階</b>，之後停在新位置不動了。由<b>一次性事件</b>造成。<br>蝕刻：PM、換 focus ring、換鋼瓶。<br><b>查法：對 event log 的時間點。</b>',
+      off: function (i) { return i >= 15 ? 2.2 : 0; } },
+    { t: '趨勢／漂移', en: 'Trend / Drift',
+      d: '<b>持續</b>往同一個方向走，不會停。由<b>隨時間累積</b>的因素造成。<br>蝕刻：腔壁沉積累積、化學液老化。<br><b>查法：對 RF hours、PM 週期。</b>',
+      off: function (i) { return i >= 12 ? (i - 11) * 0.32 : 0; } },
+    { t: '混流', en: 'Mixture',
+      d: '<b>兩群不同的資料被畫在同一張圖上</b>，所以點在兩個高度之間跳，中間反而是空的。<br>蝕刻：A/B 兩個 chamber 輪流跑貨。<br><b>處置：分層，拆成兩張圖 —— 不是調機。</b>',
+      off: function (i) { return (i % 2 ? 1 : -1) * 1.9; } },
+    { t: '變異變大', en: 'Increased variation',
+      d: '中心沒跑掉，但<b>上下擺動的幅度變大</b>了。平均值看起來還好，穩定度卻掉了。<br>蝕刻：電漿或溫度分佈不均。<br><b>只盯平均值會完全漏掉這種。</b>',
+      sc: function (i) { return i >= 14 ? 2.6 : 1; } }
+  ];
+
+  function buildGallery() {
+    var box = $('gallery');
+    if (!box) return;
+    PATTERNS.forEach(function (p, idx) {
+      var rnd = SPC.makeNormal(1234 + idx * 77);
+      var vals = [];
+      for (var i = 0; i < 26; i++) {
+        vals.push((p.off ? p.off(i) : 0) + (p.sc ? p.sc(i) : 1) * rnd());
+      }
+      var cell = document.createElement('div');
+      cell.className = 'gal';
+      cell.innerHTML = '<div class="en">' + p.en + '</div><h3>' + p.t + '</h3>' +
+        '<div class="mn"></div><div class="d">' + p.d + '</div>';
+      box.appendChild(cell);
+      // 界限固定成 0 ± 3，代表「用受控期建立的基準」
+      SPCChart.miniChart(cell.querySelector('.mn'), vals, 0, 1);
+    });
+  }
+
   /* ---------- 主繪製 ---------- */
   function render() {
     var sc = SCENARIOS.get(state.scenario);
@@ -191,5 +229,6 @@
   });
 
   buildRules();
+  buildGallery();
   render();
 })();
