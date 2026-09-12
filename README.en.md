@@ -2,7 +2,7 @@
 
 English · [繁體中文](README.md)
 
-**Live version:** <https://USER.github.io/spc-playground/> (fill in after pushing to GitHub and enabling Pages)
+**Live version:** <https://sainty-918.github.io/spc-playground/>
 
 An interactive tutorial on Statistical Process Control (SPC), using semiconductor etch as the
 worked example. Move a slider to change the process, and the control chart, rule violations and
@@ -18,7 +18,7 @@ The live version needs no installation at all.
 To run it locally: no build step, no dependencies — clone it and serve the directory with any static server:
 
 ```bash
-git clone https://github.com/<your-account>/spc-playground.git
+git clone https://github.com/SaintY-918/spc-playground.git
 cd spc-playground
 python -m http.server 8000
 ```

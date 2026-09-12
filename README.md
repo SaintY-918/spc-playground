@@ -2,7 +2,7 @@
 
 [English](README.en.md) · 繁體中文
 
-**線上版：** <https://USER.github.io/spc-playground/>（推上 GitHub 並開啟 Pages 後填入）
+**線上版：** <https://sainty-918.github.io/spc-playground/>
 
 統計製程管制（SPC）的互動教學頁面，以半導體蝕刻製程為例。
 拉滑桿改變製程參數，管制圖、判異結果、Cp/Cpk 會即時重算。
@@ -16,7 +16,7 @@
 要在本機跑的話，沒有建置步驟、沒有相依套件，clone 之後用任何靜態伺服器打開即可：
 
 ```bash
-git clone https://github.com/<your-account>/spc-playground.git
+git clone https://github.com/SaintY-918/spc-playground.git
 cd spc-playground
 python -m http.server 8000
 ```
